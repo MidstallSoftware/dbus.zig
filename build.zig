@@ -35,15 +35,18 @@ pub fn build(b: *std.Build) !void {
             \\#define HAVE_ERRNO_H
             \\#include <stdarg.h>
             \\#include <stdint.h>
+            \\#include <unistd.h>
             \\
             \\#define VERSION "1.14.10"
             \\#define SOVERSION "3.38.0"
+            \\#define DBUS_DAEMON_NAME "\"dbus\""
             \\#define DBUS_COMPILATION
             \\#define DBUS_VA_COPY va_copy
             \\#define DBUS_SESSION_BUS_CONNECT_ADDRESS "\"autolaunch:\""
             \\#define DBUS_SYSTEM_BUS_DEFAULT_ADDRESS "\"unix:tmpdir=/tmp\""
             \\#define DBUS_ENABLE_CHECKS
             \\#define DBUS_ENABLE_ASSERT
+            \\#define HAVE_ALLOCA_H
             \\
         );
 
@@ -57,7 +60,9 @@ pub fn build(b: *std.Build) !void {
                 \\#define _GNU_SOURCE
                 \\#define HAVE_SYSLOG_H
                 \\#define HAVE_SOCKLEN_T
+                \\#define HAVE_SYS_RANDOM_H
                 \\
+                \\#include <signal.h>
                 \\#include <sys/types.h>
                 \\
                 \\struct ucred {
@@ -80,8 +85,11 @@ pub fn build(b: *std.Build) !void {
 
         if (target.result.os.tag == .linux) {
             try output.appendSlice(
+                \\#define HAVE_APPARMOR
+                \\#define HAVE_APPARMOR_2_10
                 \\#define HAVE_LIBAUDIT
                 \\#define HAVE_SELINUX
+                \\#define DBUS_HAVE_LINUX_EPOLL
                 \\
             );
         }
@@ -184,4 +192,44 @@ pub fn build(b: *std.Build) !void {
     }
 
     b.installArtifact(libdbus);
+
+    const dbusDaemon = b.addExecutable(.{
+        .name = "dbus-daemon",
+        .target = target,
+        .optimize = optimize,
+        .linkage = linkage,
+        .link_libc = true,
+    });
+
+    dbusDaemon.addConfigHeader(archDepsHeader);
+    dbusDaemon.addIncludePath(configHeader.getDirectory());
+    dbusDaemon.addIncludePath(dbusSource.path("."));
+
+    dbusDaemon.addCSourceFiles(.{
+        .files = &.{
+            dbusSource.path("bus/activation.c").getPath(dbusSource.builder),
+            dbusSource.path("bus/apparmor.c").getPath(dbusSource.builder),
+            dbusSource.path("bus/audit.c").getPath(dbusSource.builder),
+            dbusSource.path("bus/bus.c").getPath(dbusSource.builder),
+            dbusSource.path("bus/config-loader-expat.c").getPath(dbusSource.builder),
+            dbusSource.path("bus/config-parser-common.c").getPath(dbusSource.builder),
+            dbusSource.path("bus/config-parser.c").getPath(dbusSource.builder),
+            dbusSource.path("bus/connection.c").getPath(dbusSource.builder),
+            dbusSource.path("bus/containers.c").getPath(dbusSource.builder),
+            dbusSource.path("bus/desktop-file.c").getPath(dbusSource.builder),
+            dbusSource.path("bus/dispatch.c").getPath(dbusSource.builder),
+            dbusSource.path("bus/driver.c").getPath(dbusSource.builder),
+            dbusSource.path("bus/expirelist.c").getPath(dbusSource.builder),
+            dbusSource.path("bus/main.c").getPath(dbusSource.builder),
+            dbusSource.path("bus/policy.c").getPath(dbusSource.builder),
+            dbusSource.path("bus/selinux.c").getPath(dbusSource.builder),
+            dbusSource.path("bus/services.c").getPath(dbusSource.builder),
+            dbusSource.path("bus/signals.c").getPath(dbusSource.builder),
+            dbusSource.path("bus/stats.c").getPath(dbusSource.builder),
+            dbusSource.path("bus/test.c").getPath(dbusSource.builder),
+            dbusSource.path("bus/utils.c").getPath(dbusSource.builder),
+        },
+    });
+
+    b.installArtifact(dbusDaemon);
 }
