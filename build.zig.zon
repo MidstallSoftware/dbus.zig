@@ -7,5 +7,9 @@
             .url = "https://dbus.freedesktop.org/releases/dbus/dbus-1.14.10.tar.xz",
             .hash = "12205f2bf69294216864d8ced53358d2ea3e7dfda7c586581df65d6a8ab3fcb3e23d",
         },
+        .expat = .{
+            .url = "https://github.com/MidstallSoftware/expat.zig/archive/24b51902a3fb8b9703dd1a629b51a25226a06e41.tar.gz",
+            .hash = "1220373131b333523a0f8515e8c1e121e19cf8c4e03a7dda36901782d76cb9376a5c",
+        },
     },
 }

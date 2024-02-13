@@ -6,6 +6,7 @@ pub fn build(b: *std.Build) !void {
     const linkage = b.option(std.Build.Step.Compile.Linkage, "linkage", "whether to statically or dynamically link the library") orelse .static;
 
     const dbusSource = b.dependency("dbus", .{});
+    const expat = b.dependency("expat", .{});
 
     const archDepsHeader = b.addConfigHeader(.{
         .style = .{
@@ -191,6 +192,36 @@ pub fn build(b: *std.Build) !void {
         });
     }
 
+    {
+        const headers: []const []const u8 = &.{
+            "dbus/dbus-address.h",
+            "dbus/dbus-bus.h",
+            "dbus/dbus-connection.h",
+            "dbus/dbus-errors.h",
+            "dbus/dbus-macros.h",
+            "dbus/dbus-memory.h",
+            "dbus/dbus-message.h",
+            "dbus/dbus-misc.h",
+            "dbus/dbus-pending-call.h",
+            "dbus/dbus-protocol.h",
+            "dbus/dbus-server.h",
+            "dbus/dbus-shared.h",
+            "dbus/dbus-signature.h",
+            "dbus/dbus-syntax.h",
+            "dbus/dbus-threads.h",
+            "dbus/dbus-types.h",
+            "dbus/dbus.h",
+        };
+
+        for (headers) |header| {
+            const install_file = b.addInstallFileWithDir(dbusSource.path(header), .header, header);
+            b.getInstallStep().dependOn(&install_file.step);
+            libdbus.installed_headers.append(&install_file.step) catch @panic("OOM");
+        }
+    }
+
+    libdbus.installConfigHeader(archDepsHeader, .{});
+
     b.installArtifact(libdbus);
 
     const dbusDaemon = b.addExecutable(.{
@@ -204,6 +235,7 @@ pub fn build(b: *std.Build) !void {
     dbusDaemon.addConfigHeader(archDepsHeader);
     dbusDaemon.addIncludePath(configHeader.getDirectory());
     dbusDaemon.addIncludePath(dbusSource.path("."));
+    dbusDaemon.linkLibrary(expat.artifact("expat"));
 
     dbusDaemon.addCSourceFiles(.{
         .files = &.{
