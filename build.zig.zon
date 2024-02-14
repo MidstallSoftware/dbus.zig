@@ -11,5 +11,9 @@
             .url = "https://github.com/MidstallSoftware/expat.zig/archive/24b51902a3fb8b9703dd1a629b51a25226a06e41.tar.gz",
             .hash = "1220373131b333523a0f8515e8c1e121e19cf8c4e03a7dda36901782d76cb9376a5c",
         },
+        .@"libcap-ng" = .{
+            .url = "https://github.com/MidstallSoftware/libcap-ng.zig/archive/4f7e4294472368d1cd9bd9a14c65c824e740503d.tar.gz",
+            .hash = "1220470e48999989b87360b808d5617d491278e9b9d4a6fd96d1ee1f183577dd5dac",
+        },
     },
 }

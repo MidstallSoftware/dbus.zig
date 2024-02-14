@@ -263,5 +263,15 @@ pub fn build(b: *std.Build) !void {
         },
     });
 
+    if (target.result.os.tag == .linux) {
+        const libcap = b.dependency("libcap-ng", .{
+            .target = target,
+            .optimize = optimize,
+            .linkage = linkage,
+        });
+
+        dbusDaemon.linkLibrary(libcap.artifact("cap-ng"));
+    }
+
     b.installArtifact(dbusDaemon);
 }
