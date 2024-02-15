@@ -264,6 +264,14 @@ pub fn build(b: *std.Build) !void {
     });
 
     if (target.result.os.tag == .linux) {
+        const apparmor = b.dependency("apparmor", .{
+            .target = target,
+            .optimize = optimize,
+            .linkage = linkage,
+        });
+
+        dbusDaemon.linkLibrary(apparmor.artifact("apparmor"));
+
         const libaudit = b.dependency("libaudit", .{
             .target = target,
             .optimize = optimize,

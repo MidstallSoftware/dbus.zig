@@ -19,5 +19,9 @@
             .url = "https://github.com/MidstallSoftware/libaudit.zig/archive/1e127523be72767dc99a2c9094b74c4dc35dd72d.tar.gz",
             .hash = "12205f616e9d65fb2fd702f78dbf308d0d70a77a164e878732d9ab55f4b59323840f",
         },
+        .apparmor = .{
+            .url = "https://github.com/MidstallSoftware/apparmor.zig/archive/4f32b90f540769d37879e23cb85e0e1c4fb10dcb.tar.gz",
+            .hash = "122012664e9471afd21b4bfbeb60460cf2ce9a0248adf095ce8ff47de2c6319c9a3f",
+        },
     },
 }
