@@ -51,6 +51,13 @@ pub fn build(b: *std.Build) !void {
             \\
         );
 
+        if (target.result.abi == .gnu) {
+            try output.appendSlice(
+                \\#define __USE_GNU
+                \\
+            );
+        }
+
         if (target.result.os.tag == .windows) {
             try output.appendSlice(
                 \\#define DBUS_WIN
@@ -65,12 +72,6 @@ pub fn build(b: *std.Build) !void {
                 \\
                 \\#include <signal.h>
                 \\#include <sys/types.h>
-                \\
-                \\struct ucred {
-                \\  pid_t pid;
-                \\  uid_t uid;
-                \\  gid_t gid;
-                \\};
                 \\
                 \\#define DBUS_UNIX
                 \\#define HAVE_GETPWNAM_R
