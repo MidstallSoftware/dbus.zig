@@ -12,16 +12,16 @@
             .hash = "1220373131b333523a0f8515e8c1e121e19cf8c4e03a7dda36901782d76cb9376a5c",
         },
         .@"libcap-ng" = .{
-            .url = "https://github.com/MidstallSoftware/libcap-ng.zig/archive/4f7e4294472368d1cd9bd9a14c65c824e740503d.tar.gz",
-            .hash = "1220470e48999989b87360b808d5617d491278e9b9d4a6fd96d1ee1f183577dd5dac",
+            .url = "https://github.com/MidstallSoftware/libcap-ng.zig/archive/a754e5adc8ae4f0b8ec25a481dd07250d445ba57.tar.gz",
+            .hash = "1220e1dea1b8b34378a88c991166cd3941fc0f77bbc19fbbf8dbeb34c91d88ba39c8",
         },
         .libaudit = .{
             .url = "https://github.com/MidstallSoftware/libaudit.zig/archive/1e127523be72767dc99a2c9094b74c4dc35dd72d.tar.gz",
             .hash = "12205f616e9d65fb2fd702f78dbf308d0d70a77a164e878732d9ab55f4b59323840f",
         },
         .apparmor = .{
-            .url = "https://github.com/MidstallSoftware/apparmor.zig/archive/4f32b90f540769d37879e23cb85e0e1c4fb10dcb.tar.gz",
-            .hash = "122012664e9471afd21b4bfbeb60460cf2ce9a0248adf095ce8ff47de2c6319c9a3f",
+            .url = "https://github.com/MidstallSoftware/apparmor.zig/archive/6c694a3080d8ff15045ff0d2e8686710dfddb759.tar.gz",
+            .hash = "122077c813b5bcc473f67be4978f2730ca201cc6f13b0a26aa5a05265676bccc9a3e",
         },
     },
 }
