@@ -90,6 +90,7 @@ pub fn build(b: *std.Build) !void {
                 \\#define HAVE_APPARMOR
                 \\#define HAVE_APPARMOR_2_10
                 \\#define HAVE_LIBAUDIT
+                \\#define HAVE_SELINUX
                 \\#define DBUS_HAVE_LINUX_EPOLL
                 \\
             );
@@ -281,6 +282,14 @@ pub fn build(b: *std.Build) !void {
         });
 
         dbusDaemon.linkLibrary(apparmor.artifact("apparmor"));
+
+        const selinux = b.dependency("selinux", .{
+            .target = target,
+            .optimize = optimize,
+            .linkage = linkage,
+        });
+
+        dbusDaemon.linkLibrary(selinux.artifact("selinux"));
 
         const libaudit = b.dependency("libaudit", .{
             .target = target,

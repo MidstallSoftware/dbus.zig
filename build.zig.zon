@@ -23,5 +23,9 @@
             .url = "https://github.com/MidstallSoftware/apparmor.zig/archive/6c694a3080d8ff15045ff0d2e8686710dfddb759.tar.gz",
             .hash = "122077c813b5bcc473f67be4978f2730ca201cc6f13b0a26aa5a05265676bccc9a3e",
         },
+        .selinux = .{
+            .url = "https://github.com/MidstallSoftware/selinux.zig/archive/8f70d59c6f1239e165ade8d46c679124b1cced69.tar.gz",
+            .hash = "1220ee07f7563df59f3a1db7bb74498c44318e7eedd0abff05a20fa786bd03b6de74",
+        },
     },
 }
