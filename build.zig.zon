@@ -16,8 +16,8 @@
             .hash = "1220e1dea1b8b34378a88c991166cd3941fc0f77bbc19fbbf8dbeb34c91d88ba39c8",
         },
         .libaudit = .{
-            .url = "https://github.com/MidstallSoftware/libaudit.zig/archive/1e127523be72767dc99a2c9094b74c4dc35dd72d.tar.gz",
-            .hash = "12205f616e9d65fb2fd702f78dbf308d0d70a77a164e878732d9ab55f4b59323840f",
+            .url = "https://github.com/MidstallSoftware/libaudit.zig/archive/1e0f394fba48db1635fa18e3d46164970c556e83.tar.gz",
+            .hash = "12209af9de10cb22a37b3d26c01e467bc0086c569837b34b35048e0975ed701ad2fe",
         },
         .apparmor = .{
             .url = "https://github.com/MidstallSoftware/apparmor.zig/archive/6c694a3080d8ff15045ff0d2e8686710dfddb759.tar.gz",
