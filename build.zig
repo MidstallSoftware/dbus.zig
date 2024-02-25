@@ -64,7 +64,7 @@ pub fn build(b: *std.Build) !void {
                 \\
             );
         } else {
-            try output.appendSlice(
+            try output.appendSlice(b.fmt(
                 \\#define _GNU_SOURCE
                 \\#define HAVE_SYSLOG_H
                 \\#define HAVE_SOCKLEN_T
@@ -75,14 +75,21 @@ pub fn build(b: *std.Build) !void {
                 \\
                 \\#define DBUS_UNIX
                 \\#define HAVE_GETPWNAM_R
-                \\#define DBUS_PREFIX "/"
-                \\#define DBUS_BINDIR "/bin"
-                \\#define DBUS_DATADIR "/usr/share"
-                \\#define DBUS_MACHINE_UUID_FILE "/var/lib/dbus/machine-id"
-                \\#define DBUS_SYSTEM_CONFIG_FILE "/usr/share/dbus-1/system.conf"
-                \\#define DBUS_SESSION_CONFIG_FILE "/usr/share/dbus-1/session.conf"
+                \\#define DBUS_PREFIX "{s}"
+                \\#define DBUS_BINDIR "{s}"
+                \\#define DBUS_DATADIR "{s}"
+                \\#define DBUS_MACHINE_UUID_FILE "{s}"
+                \\#define DBUS_SYSTEM_CONFIG_FILE "{s}"
+                \\#define DBUS_SESSION_CONFIG_FILE "{s}"
                 \\
-            );
+            , .{
+                b.install_prefix,
+                b.getInstallPath(.bin, ""),
+                b.getInstallPath(.prefix, "/usr/share"),
+                b.getInstallPath(.prefix, "/var/lib/dbus/machine-id"),
+                b.getInstallPath(.prefix, "/usr/share/dbus-1/system.conf"),
+                b.getInstallPath(.prefix, "/usr/share/dbus-1/session.conf"),
+            }));
         }
 
         if (target.result.os.tag == .linux) {
