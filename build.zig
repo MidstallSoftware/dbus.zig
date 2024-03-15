@@ -3,7 +3,7 @@ const std = @import("std");
 pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
-    const linkage = b.option(std.Build.Step.Compile.Linkage, "linkage", "whether to statically or dynamically link the library") orelse .static;
+    const linkage = b.option(std.builtin.LinkMode, "linkage", "whether to statically or dynamically link the library") orelse @as(std.builtin.LinkMode, if (target.result.isGnuLibC()) .dynamic else .static);
 
     const dbusSource = b.dependency("dbus", .{});
     const expat = b.dependency("expat", .{});
@@ -85,10 +85,10 @@ pub fn build(b: *std.Build) !void {
             , .{
                 b.install_prefix,
                 b.getInstallPath(.bin, ""),
-                b.getInstallPath(.prefix, "/usr/share"),
-                b.getInstallPath(.prefix, "/var/lib/dbus/machine-id"),
-                b.getInstallPath(.prefix, "/usr/share/dbus-1/system.conf"),
-                b.getInstallPath(.prefix, "/usr/share/dbus-1/session.conf"),
+                b.getInstallPath(.prefix, "usr/share"),
+                b.getInstallPath(.prefix, "var/lib/dbus/machine-id"),
+                b.getInstallPath(.prefix, "usr/share/dbus-1/system.conf"),
+                b.getInstallPath(.prefix, "usr/share/dbus-1/session.conf"),
             }));
         }
 
@@ -127,84 +127,92 @@ pub fn build(b: *std.Build) !void {
     libdbus.addIncludePath(dbusSource.path("."));
 
     libdbus.addCSourceFiles(.{
+        .root = dbusSource.path("dbus"),
         .files = &.{
-            dbusSource.path("dbus/dbus-address.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-asv-util.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-auth.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-bus.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-connection.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-credentials.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-dataslot.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-errors.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-file.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-hash.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-internals.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-keyring.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-list.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-marshal-basic.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-marshal-byteswap.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-marshal-header.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-marshal-recursive.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-marshal-validate.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-mainloop.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-memory.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-mempool.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-message.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-message-util.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-misc.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-nonce.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-object-tree.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-pending-call.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-pollable-set.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-pipe.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-resources.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-server-debug-pipe.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-server-socket.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-server.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-sha.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-signature.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-string.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-string-util.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-syntax.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-sysdeps.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-sysdeps-util.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-threads.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-timeout.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-transport-socket.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-transport.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-userdb.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-userdb-util.c").getPath(dbusSource.builder),
-            dbusSource.path("dbus/dbus-watch.c").getPath(dbusSource.builder),
+            "dbus-address.c",
+            "dbus-asv-util.c",
+            "dbus-auth.c",
+            "dbus-bus.c",
+            "dbus-connection.c",
+            "dbus-credentials.c",
+            "dbus-dataslot.c",
+            "dbus-errors.c",
+            "dbus-file.c",
+            "dbus-hash.c",
+            "dbus-internals.c",
+            "dbus-keyring.c",
+            "dbus-list.c",
+            "dbus-marshal-basic.c",
+            "dbus-marshal-byteswap.c",
+            "dbus-marshal-header.c",
+            "dbus-marshal-recursive.c",
+            "dbus-marshal-validate.c",
+            "dbus-mainloop.c",
+            "dbus-memory.c",
+            "dbus-mempool.c",
+            "dbus-message.c",
+            "dbus-message-util.c",
+            "dbus-misc.c",
+            "dbus-nonce.c",
+            "dbus-object-tree.c",
+            "dbus-pending-call.c",
+            "dbus-pollable-set.c",
+            "dbus-pipe.c",
+            "dbus-resources.c",
+            "dbus-server-debug-pipe.c",
+            "dbus-server-socket.c",
+            "dbus-server.c",
+            "dbus-sha.c",
+            "dbus-signature.c",
+            "dbus-string.c",
+            "dbus-string-util.c",
+            "dbus-syntax.c",
+            "dbus-sysdeps.c",
+            "dbus-sysdeps-util.c",
+            "dbus-threads.c",
+            "dbus-timeout.c",
+            "dbus-transport-socket.c",
+            "dbus-transport.c",
+            "dbus-userdb.c",
+            "dbus-userdb-util.c",
+            "dbus-watch.c",
         },
     });
 
     if (target.result.os.tag == .windows) {
         libdbus.addCSourceFiles(.{
+            .root = dbusSource.path("dbus"),
             .files = &.{
-                dbusSource.path("dbus/dbus-backtrace-win.c").getPath(dbusSource.builder),
-                dbusSource.path("dbus/dbus-file-win.c").getPath(dbusSource.builder),
-                dbusSource.path("dbus/dbus-pipe-win.c").getPath(dbusSource.builder),
-                dbusSource.path("dbus/dbus-init-win.cpp").getPath(dbusSource.builder),
-                dbusSource.path("dbus/dbus-server-win.c").getPath(dbusSource.builder),
-                dbusSource.path("dbus/dbus-sysdeps-thread-win.c").getPath(dbusSource.builder),
-                dbusSource.path("dbus/dbus-sysdeps-util-win.c").getPath(dbusSource.builder),
-                dbusSource.path("dbus/dbus-sysdeps-win.c").getPath(dbusSource.builder),
-                dbusSource.path("dbus/dbus-transport-win.c").getPath(dbusSource.builder),
+                "dbus-backtrace-win.c",
+                "dbus-file-win.c",
+                "dbus-pipe-win.c",
+                "dbus-init-win.cpp",
+                "dbus-server-win.c",
+                "dbus-sysdeps-thread-win.c",
+                "dbus-sysdeps-util-win.c",
+                "dbus-sysdeps-win.c",
+                "dbus-transport-win.c",
             },
         });
     } else {
         libdbus.addCSourceFiles(.{
+            .root = dbusSource.path("dbus"),
             .files = &.{
-                dbusSource.path("dbus/dbus-uuidgen.c").getPath(dbusSource.builder),
-                dbusSource.path("dbus/dbus-server-unix.c").getPath(dbusSource.builder),
-                dbusSource.path("dbus/dbus-pollable-set-poll.c").getPath(dbusSource.builder),
-                dbusSource.path("dbus/dbus-pollable-set-epoll.c").getPath(dbusSource.builder),
-                dbusSource.path("dbus/dbus-file-unix.c").getPath(dbusSource.builder),
-                dbusSource.path("dbus/dbus-pipe-unix.c").getPath(dbusSource.builder),
-                dbusSource.path("dbus/dbus-sysdeps-pthread.c").getPath(dbusSource.builder),
-                dbusSource.path("dbus/dbus-sysdeps-util-unix.c").getPath(dbusSource.builder),
-                b.pathFromRoot("src/dbus-sysdeps-unix.c"),
-                dbusSource.path("dbus/dbus-transport-unix.c").getPath(dbusSource.builder),
+                "dbus-uuidgen.c",
+                "dbus-server-unix.c",
+                "dbus-pollable-set-poll.c",
+                "dbus-pollable-set-epoll.c",
+                "dbus-file-unix.c",
+                "dbus-pipe-unix.c",
+                "dbus-sysdeps-pthread.c",
+                "dbus-sysdeps-util-unix.c",
+                "dbus-transport-unix.c",
+            },
+        });
+
+        libdbus.addCSourceFile(.{
+            .file = .{
+                .path = b.pathFromRoot("src/dbus-sysdeps-unix.c"),
             },
         });
     }
@@ -256,28 +264,29 @@ pub fn build(b: *std.Build) !void {
     dbusDaemon.linkLibrary(libdbus);
 
     dbusDaemon.addCSourceFiles(.{
+        .root = dbusSource.path("bus"),
         .files = &.{
-            dbusSource.path("bus/activation.c").getPath(dbusSource.builder),
-            dbusSource.path("bus/apparmor.c").getPath(dbusSource.builder),
-            dbusSource.path("bus/audit.c").getPath(dbusSource.builder),
-            dbusSource.path("bus/bus.c").getPath(dbusSource.builder),
-            dbusSource.path("bus/config-loader-expat.c").getPath(dbusSource.builder),
-            dbusSource.path("bus/config-parser-common.c").getPath(dbusSource.builder),
-            dbusSource.path("bus/config-parser.c").getPath(dbusSource.builder),
-            dbusSource.path("bus/connection.c").getPath(dbusSource.builder),
-            dbusSource.path("bus/containers.c").getPath(dbusSource.builder),
-            dbusSource.path("bus/desktop-file.c").getPath(dbusSource.builder),
-            dbusSource.path("bus/dispatch.c").getPath(dbusSource.builder),
-            dbusSource.path("bus/driver.c").getPath(dbusSource.builder),
-            dbusSource.path("bus/expirelist.c").getPath(dbusSource.builder),
-            dbusSource.path("bus/main.c").getPath(dbusSource.builder),
-            dbusSource.path("bus/policy.c").getPath(dbusSource.builder),
-            dbusSource.path("bus/selinux.c").getPath(dbusSource.builder),
-            dbusSource.path("bus/services.c").getPath(dbusSource.builder),
-            dbusSource.path("bus/signals.c").getPath(dbusSource.builder),
-            dbusSource.path("bus/stats.c").getPath(dbusSource.builder),
-            dbusSource.path("bus/test.c").getPath(dbusSource.builder),
-            dbusSource.path("bus/utils.c").getPath(dbusSource.builder),
+            "activation.c",
+            "apparmor.c",
+            "audit.c",
+            "bus.c",
+            "config-loader-expat.c",
+            "config-parser-common.c",
+            "config-parser.c",
+            "connection.c",
+            "containers.c",
+            "desktop-file.c",
+            "dispatch.c",
+            "driver.c",
+            "expirelist.c",
+            "main.c",
+            "policy.c",
+            "selinux.c",
+            "services.c",
+            "signals.c",
+            "stats.c",
+            "test.c",
+            "utils.c",
         },
     });
 
@@ -314,10 +323,8 @@ pub fn build(b: *std.Build) !void {
 
         dbusDaemon.linkLibrary(libcap.artifact("cap-ng"));
 
-        dbusDaemon.addCSourceFiles(.{
-            .files = &.{
-                dbusSource.path("bus/dir-watch-inotify.c").getPath(dbusSource.builder),
-            },
+        dbusDaemon.addCSourceFile(.{
+            .file = dbusSource.path("bus/dir-watch-inotify.c"),
         });
     }
 
